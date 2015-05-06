@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="fill_parent"
+             android:layout_height="fill_parent"
+             android:clickable="true"
+             android:orientation="vertical"
+             android:padding="20.0dip">
+
+    <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_bombbox"
+            android:orientation="vertical">
+
+        <TextView
+                android:id="@+id/title"
+                style="@style/text_18_ffffff"
+                android:layout_width="fill_parent"
+                android:layout_height="40.0dip"
+                android:gravity="center"
+                android:text="@string/dlg_search"
+                android:visibility="visible"/>
+
+        <LinearLayout android:orientation="vertical" android:layout_width="fill_parent"
+                      android:layout_height="wrap_content">
+            <RadioGroup android:orientation="horizontal" android:id="@id/radioGroup1" android:layout_width="fill_parent"
+                        android:layout_height="wrap_content" android:layout_marginLeft="12dp">
+                <RadioButton style="@style/text_16_666666" android:id="@id/radio0" android:layout_width="wrap_content"
+                             android:layout_height="wrap_content" android:checked="true" android:text="@string/auth"
+                             android:layout_weight="1.0"/>
+                <RadioButton style="@style/text_16_666666" android:id="@id/radio1" android:layout_width="wrap_content"
+                             android:layout_height="wrap_content" android:text="@string/title"
+                             android:layout_weight="1.0"/>
+                <RadioButton style="@style/text_16_666666" android:id="@id/radio2" android:layout_width="wrap_content"
+                             android:layout_height="wrap_content" android:text="@string/content"
+                             android:layout_weight="1.0"/>
+            </RadioGroup>
+            <EditText android:id="@id/et_word" android:layout_width="fill_parent" android:layout_height="wrap_content"
+                      android:layout_margin="12dp" android:hint="@string/key" android:ems="10"
+                      android:singleLine="true">
+                <!--<requestFocus/>-->
+            </EditText>
+        </LinearLayout>
+
+        <View
+                android:layout_width="fill_parent"
+                android:layout_height="1.0px"
+                android:background="#ffd0d0d0"/>
+
+        <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="60.0dip"
+                android:layout_gravity="bottom"
+                android:background="@drawable/dialog_bottom_bg"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+            <Button
+                    android:id="@+id/btn_search"
+                    style="@style/text_15_ffffff_sdw"
+                    android:layout_width="114.0dip"
+                    android:layout_height="40.0dip"
+                    android:background="@drawable/btn_ok_selector"
+                    android:gravity="center"
+                    android:text="@string/search"/>
+        </LinearLayout>
+    </LinearLayout>
+</FrameLayout>

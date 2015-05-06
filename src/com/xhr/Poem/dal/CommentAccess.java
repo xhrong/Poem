@@ -35,7 +35,7 @@ public class CommentAccess {
 
     public List<CommentItem> getComments(int poemId) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.rawQuery("select * from " + TABLE_NAME, null);
+        Cursor cursor = db.rawQuery("select * from " + TABLE_NAME+" where poem_id="+poemId+" order by id desc", null);
         List<CommentItem> commentItems = new ArrayList<CommentItem>();
         while (cursor.moveToNext()) {
             commentItems.add(generateCommentItem(cursor));

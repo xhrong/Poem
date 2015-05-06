@@ -30,12 +30,41 @@ public class PoemAccess {
         initValues.put(PoemItem.CATEGORY_KEY, poem.getCategory());
         initValues.put(PoemItem.CONTENT_KEY, poem.getContent());
         initValues.put(PoemItem.DESCRIPTION_KEY, poem.getDescription());
+        initValues.put(PoemItem.IS_LOVED_KEY, poem.getIsLoved());
 
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         long result = db.insert(TABLE_NAME, null, initValues);
         db.close();
         return result;
     }
+
+    public List<PoemItem> getLovedPoems() {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery("select * from " + TABLE_NAME + " where is_loved=1", null);
+        List<PoemItem> lovedPoems = new ArrayList<PoemItem>();
+        while (cursor.moveToNext()) {
+            lovedPoems.add(generatePoemItem(cursor));
+        }
+        cursor.close();
+        db.close();
+        return lovedPoems;
+    }
+
+    public int updatePoem(PoemItem poem) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        ContentValues initValues = new ContentValues();
+        initValues.put(PoemItem.TITLE_KEY, poem.getTitle());
+        initValues.put(PoemItem.AUTHOR_KEY, poem.getAuthor());
+        initValues.put(PoemItem.CATEGORY_KEY, poem.getCategory());
+        initValues.put(PoemItem.CONTENT_KEY, poem.getContent());
+        initValues.put(PoemItem.DESCRIPTION_KEY, poem.getDescription());
+        initValues.put(PoemItem.IS_LOVED_KEY, poem.getIsLoved());
+        int result = db.update(TABLE_NAME, initValues, "id=?", new String[]{String.valueOf(poem.getId())});
+        db.close();
+        return result;
+    }
+
+
 
     public List<PoemItem> getMatchedPoems(String key, String value) {
         String sql = null;
@@ -87,6 +116,7 @@ public class PoemAccess {
         poemItem.setCategory(cursor.getString(cursor.getColumnIndexOrThrow(PoemItem.CATEGORY_KEY)));
         poemItem.setContent(cursor.getString(cursor.getColumnIndexOrThrow(PoemItem.CONTENT_KEY)));
         poemItem.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(PoemItem.DESCRIPTION_KEY)));
+        poemItem.setIsLoved(cursor.getInt(cursor.getColumnIndexOrThrow(PoemItem.IS_LOVED_KEY)));
         return poemItem;
     }
 }

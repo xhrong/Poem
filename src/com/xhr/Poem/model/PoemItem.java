@@ -12,6 +12,7 @@ public class PoemItem {
     public static final String CATEGORY_KEY = "category";
     public static final String CONTENT_KEY = "content";
     public static final String DESCRIPTION_KEY = "description";
+    public static final String IS_LOVED_KEY="is_loved";
 
 
     private int id;
@@ -20,6 +21,7 @@ public class PoemItem {
     private String category;
     private String content;
     private String description;
+    private int isLoved;
 
     public int getId() {
         return id;
@@ -67,5 +69,13 @@ public class PoemItem {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public int getIsLoved(){
+        return isLoved;
+    }
+
+    public void setIsLoved(int isLoved){
+        this.isLoved=isLoved;
     }
 }
