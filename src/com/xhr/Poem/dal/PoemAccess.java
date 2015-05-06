@@ -17,6 +17,8 @@ public class PoemAccess {
 
     private static XhrDbHelper dbHelper;
 
+    private static final String TABLE_NAME = "poem";
+
     public PoemAccess(Context context) {
         dbHelper = XhrDbHelper.getInstance(context);
     }
@@ -30,7 +32,7 @@ public class PoemAccess {
         initValues.put(PoemItem.DESCRIPTION_KEY, poem.getDescription());
 
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        long result = db.insert("poem", null, initValues);
+        long result = db.insert(TABLE_NAME, null, initValues);
         db.close();
         return result;
     }
@@ -43,11 +45,11 @@ public class PoemAccess {
             return matchedPoems;
         }
         if (key.equals(PoemItem.AUTHOR_KEY)) {
-            sql = "select * from poem where author like '%" + value + "%'";
+            sql = "select * from " + TABLE_NAME + " where author like '%" + value + "%'";
         } else if (key.equals(PoemItem.TITLE_KEY)) {
-            sql = "select * from poem where title like '%" + value + "%'";
+            sql = "select * from " + TABLE_NAME + " where title like '%" + value + "%'";
         } else if (key.equals(PoemItem.CONTENT_KEY)) {
-            sql = "select * from poem where content like '%" + value + "%'";
+            sql = "select * from " + TABLE_NAME + " where content like '%" + value + "%'";
         }
         //如果不是上面三个查询，则返回空
         if (sql == null) {
@@ -67,7 +69,7 @@ public class PoemAccess {
 
     public List<PoemItem> getAllPoems() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.rawQuery("select * from poem", null);
+        Cursor cursor = db.rawQuery("select * from " + TABLE_NAME, null);
         List<PoemItem> allPoems = new ArrayList<PoemItem>();
         while (cursor.moveToNext()) {
             allPoems.add(generatePoemItem(cursor));
