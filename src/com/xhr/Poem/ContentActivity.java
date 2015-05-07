@@ -8,17 +8,28 @@ import android.os.Bundle;
 import android.text.Html;
 import android.text.InputType;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
+import com.umeng.socialize.bean.SHARE_MEDIA;
+import com.umeng.socialize.controller.UMEvernoteHandler;
+import com.umeng.socialize.controller.UMServiceFactory;
+import com.umeng.socialize.controller.UMSocialService;
+import com.umeng.socialize.controller.media.EvernoteShareContent;
+import com.umeng.socialize.media.QQShareContent;
+import com.umeng.socialize.media.QZoneShareContent;
+import com.umeng.socialize.media.UMImage;
+import com.umeng.socialize.sso.QZoneSsoHandler;
+import com.umeng.socialize.sso.UMQQSsoHandler;
+import com.umeng.socialize.weixin.controller.UMWXHandler;
+import com.umeng.socialize.weixin.media.CircleShareContent;
+import com.umeng.socialize.weixin.media.WeiXinShareContent;
 import com.xhr.Poem.dal.CommentAccess;
 import com.xhr.Poem.dal.PoemAccess;
 import com.xhr.Poem.model.CommentItem;
 import com.xhr.Poem.model.PoemItem;
 import com.xhr.Poem.view.CommonDialog;
-
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -30,6 +41,11 @@ import java.util.Random;
  * Created by xhrong on 2015/4/6.
  */
 public class ContentActivity extends Activity {
+
+    private final static String appDownloadPage = "http://www.cnblogs.com/GrateSea/articles/4485388.html";
+
+    private static UMSocialService mController;
+
 
     TextView tvTitle, tvAuthor, tvContent;
     Button btnBack, btnLove, btnComment, btnViewComment;
@@ -44,6 +60,7 @@ public class ContentActivity extends Activity {
 
     private static final float MAX_FONT_SIZE = 40f;
     private static final float MIN_FONT_SIZE = 20f;
+
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,8 +79,7 @@ public class ContentActivity extends Activity {
         canLoved = intent.getBooleanExtra("canLoved", true);
 
         commentAccess = new CommentAccess(this);
-        poemAccess=new PoemAccess(this);
-        //    commentJSONSerializer = new CommentJSONSerializer(this, "comment_" + ciInfo.id + ".json");
+        poemAccess = new PoemAccess(this);
         try {
             commentItems = commentAccess.getComments(poemItem.getId());
             Log.e("COUNT:", commentItems.size() + "");
@@ -72,8 +88,122 @@ public class ContentActivity extends Activity {
         }
         initView();
 
-
+        // 配置需要分享的相关平台
+        configPlatforms();
+        // 设置分享的内容
+        setShareContent();
     }
+
+    /**
+     * 根据不同的平台设置不同的分享内容</br>
+     */
+    private void setShareContent() {
+        mController = UMServiceFactory.getUMSocialService("com.umeng.share");
+        mController.getConfig().setPlatforms(SHARE_MEDIA.WEIXIN, SHARE_MEDIA.WEIXIN_CIRCLE, SHARE_MEDIA.QQ, SHARE_MEDIA.QZONE,SHARE_MEDIA.EVERNOTE);
+        UMImage localImage = new UMImage(ContentActivity.this, R.drawable.icon);
+
+        // 设置微信朋友圈分享的内容
+        CircleShareContent circleShareContent = new CircleShareContent();
+        circleShareContent.setShareContent(poemItem.getContent().replace("<br />", "\r\n"));
+        circleShareContent.setTitle(poemItem.getTitle() + "  " + poemItem.getAuthor());
+        circleShareContent.setShareImage(localImage);
+        circleShareContent.setTargetUrl(appDownloadPage);
+        mController.setShareMedia(circleShareContent);
+
+        //设置微信分享内容
+        WeiXinShareContent weiXinShareContent = new WeiXinShareContent();
+        weiXinShareContent.setShareContent(poemItem.getContent().replace("<br />", "\r\n"));
+        weiXinShareContent.setTitle(poemItem.getTitle() + "  " + poemItem.getAuthor());
+        weiXinShareContent.setTargetUrl(appDownloadPage);
+        weiXinShareContent.setShareMedia(localImage);
+        mController.setShareMedia(weiXinShareContent);
+
+        // 设置QQ空间分享内容
+        QZoneShareContent qZoneShareContent = new QZoneShareContent();
+        qZoneShareContent.setShareContent(poemItem.getContent().replace("<br />", "\r\n"));
+        qZoneShareContent.setShareImage(localImage);
+        qZoneShareContent.setTargetUrl(appDownloadPage);
+        qZoneShareContent.setTitle(poemItem.getTitle() + "  " + poemItem.getAuthor());
+        mController.setShareMedia(qZoneShareContent);
+
+        //设置QQ分享内容
+        QQShareContent qqShareContent = new QQShareContent();
+        qqShareContent.setShareContent(poemItem.getContent().replace("<br />", "\r\n"));
+        qqShareContent.setShareImage(localImage);
+        qqShareContent.setTitle(poemItem.getTitle() + "  " + poemItem.getAuthor());
+        qqShareContent.setTargetUrl(appDownloadPage);
+        mController.setShareMedia(qqShareContent);
+
+        // 设置evernote的分享内容
+        EvernoteShareContent evernoteShareContent = new EvernoteShareContent(poemItem.getContent().replace("<br />", "\r\n"));
+        evernoteShareContent.setTitle(poemItem.getTitle() + "  " + poemItem.getAuthor());
+        evernoteShareContent.setShareImage(localImage);
+        evernoteShareContent.setTargetUrl(appDownloadPage);
+        mController.setShareMedia(evernoteShareContent);
+    }
+
+    /**
+     * 配置分享平台参数</br>
+     */
+    private void configPlatforms() {
+        // 添加QQ、QZone平台
+        addQQQZonePlatform();
+
+        // 添加微信、微信朋友圈平台
+        addWXPlatform();
+
+        //添加Evernote平台
+        addEverNote();
+    }
+
+
+    /**
+     * @return
+     * @功能描述 : 添加微信平台分享
+     */
+    private void addWXPlatform() {
+        // 注意：在微信授权的时候，必须传递appSecret
+        // wx967daebe835fbeac是你在微信开发平台注册应用的AppID, 这里需要替换成你注册的AppID
+        String appId = "wx967daebe835fbeac";
+        String appSecret = "5bb696d9ccd75a38c8a0bfe0675559b3";
+        // 添加微信平台
+        UMWXHandler wxHandler = new UMWXHandler(ContentActivity.this, appId, appSecret);
+        wxHandler.addToSocialSDK();
+
+        // 支持微信朋友圈
+        UMWXHandler wxCircleHandler = new UMWXHandler(ContentActivity.this, appId, appSecret);
+        wxCircleHandler.setToCircle(true);
+        wxCircleHandler.addToSocialSDK();
+    }
+
+    /**
+     * @return
+     * @功能描述 : 添加QQ平台支持 QQ分享的内容， 包含四种类型， 即单纯的文字、图片、音乐、视频. 参数说明 : title, summary,
+     * image url中必须至少设置一个, targetUrl必须设置,网页地址必须以"http://"开头 . title :
+     * 要分享标题 summary : 要分享的文字概述 image url : 图片地址 [以上三个参数至少填写一个] targetUrl
+     * : 用户点击该分享时跳转到的目标地址 [必填] ( 若不填写则默认设置为友盟主页 )
+     */
+    private void addQQQZonePlatform() {
+        String appId = "100424468";
+        String appKey = "c7394704798a158208a74ab60104f0ba";
+        // 添加QQ支持, 并且设置QQ分享内容的target url
+        UMQQSsoHandler qqSsoHandler = new UMQQSsoHandler(ContentActivity.this,
+                appId, appKey);
+        qqSsoHandler.setTargetUrl("http://www.umeng.com/social");
+        qqSsoHandler.addToSocialSDK();
+
+        // 添加QZone平台
+        QZoneSsoHandler qZoneSsoHandler = new QZoneSsoHandler(ContentActivity.this, appId, appKey);
+        qZoneSsoHandler.addToSocialSDK();
+    }
+    /**
+     * 添加印象笔记平台
+     */
+    private void addEverNote() {
+        UMEvernoteHandler evernoteHandler = new UMEvernoteHandler(ContentActivity.this);
+        evernoteHandler.addToSocialSDK();
+    }
+
 
     private void initView() {
         tvTitle = (TextView) findViewById(R.id.tv_title);
@@ -105,9 +235,11 @@ public class ContentActivity extends Activity {
         btnLove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                poemItem.setIsLoved(1);
-                poemAccess.updatePoem(poemItem);
-                Toast.makeText(ContentActivity.this, "添加成功", Toast.LENGTH_SHORT).show();
+//                poemItem.setIsLoved(1);
+//                poemAccess.updatePoem(poemItem);
+//                Toast.makeText(ContentActivity.this, "添加成功", Toast.LENGTH_SHORT).show();
+
+                mController.openShare(ContentActivity.this, false);
             }
         });
 
@@ -127,6 +259,7 @@ public class ContentActivity extends Activity {
         });
 
     }
+
 
     public void showViewCommentDialog(final PoemItem poemItem) {
         CommonDialog.Builder builder = new CommonDialog.Builder(this);
@@ -177,7 +310,7 @@ public class ContentActivity extends Activity {
                     //  temp.setid = System.currentTimeMillis() + "";
                     temp.setContent(data);
                     temp.setPoemId(poemItem.getId());
-                    commentItems.add(0,temp);
+                    commentItems.add(0, temp);
                     commentAccess.addComment(temp);
 
                     dialog.dismiss();

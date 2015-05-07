@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.*;
+import com.umeng.analytics.MobclickAgent;
 import com.xhr.Poem.dal.PoemAccess;
 import com.xhr.Poem.model.PoemItem;
 import com.xhr.Poem.view.CommonDialog;
@@ -34,14 +35,14 @@ public class MainActivity extends Activity {
     PoemAdapter poemAdapter;
 
     PoemAccess poemAccess;
-    public static   int[] bgImgs = {R.drawable.bg1, R.drawable.bg2, R.drawable.bg3, R.drawable.bg4, R.drawable.bg5, R.drawable.bg6, R.drawable.bg7, R.drawable.bg8};
+    public static int[] bgImgs = {R.drawable.bg1, R.drawable.bg2, R.drawable.bg3, R.drawable.bg4, R.drawable.bg5, R.drawable.bg6, R.drawable.bg7, R.drawable.bg8};
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         mContext = this;
-        poemAccess=new PoemAccess(this);
+        poemAccess = new PoemAccess(this);
         poemItems.clear();
         poemItems.addAll(XhrApplication.getPoemItemList());
         initView();
@@ -52,7 +53,8 @@ public class MainActivity extends Activity {
         btnLove = (Button) findViewById(R.id.btn_favorite);
         btnAll = (Button) findViewById(R.id.btn_all);
         btnSearch = (Button) findViewById(R.id.btn_search);
-        findViewById(R.id.root).setBackgroundResource(bgImgs[new Random().nextInt(8)]);;
+        findViewById(R.id.root).setBackgroundResource(bgImgs[new Random().nextInt(8)]);
+        ;
         poemAdapter = new PoemAdapter(this, poemItems);
         listView.setAdapter(poemAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -87,8 +89,7 @@ public class MainActivity extends Activity {
         btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showSearchDialog();
-
+                 showSearchDialog();
             }
         });
 
@@ -116,7 +117,6 @@ public class MainActivity extends Activity {
 
         setCurrent(btnAll);
     }
-
 
 
     private void setCurrent(Button btn) {
@@ -170,7 +170,7 @@ public class MainActivity extends Activity {
                 poemItems.remove(poemItem);
                 poemAdapter.notifyDataSetChanged();
                 poemItem.setIsLoved(0);
-                poemAccess.updatePoem( poemItem);
+                poemAccess.updatePoem(poemItem);
                 //设置你的操作事项
             }
         });
@@ -251,6 +251,20 @@ public class MainActivity extends Activity {
             });
 
         }
+    }
+
+    @Override
+    protected void onPause() {
+        // TODO Auto-generated method stub
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
+
+    @Override
+    protected void onResume() {
+        // TODO Auto-generated method stub
+        super.onResume();
+        MobclickAgent.onResume(this);
     }
 
     public class PoemAdapter extends BaseAdapter {
