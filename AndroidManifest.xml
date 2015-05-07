@@ -29,6 +29,7 @@
         </meta-data>
         <meta-data android:name="UMENG_CHANNEL" android:value="360ZhuShou">
         </meta-data>
+
         <activity android:configChanges="orientation|keyboard" android:launchMode="singleTask"
                   android:name="com.umeng.socialize.view.ShareActivity" android:noHistory="true"
                   android:theme="@style/Theme.UMDialog" android:windowSoftInputMode="stateVisible|adjustResize"/>
