@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.*;
+import com.umeng.analytics.MobclickAgent;
 import com.xhr.Poem.dal.PoemAccess;
 import com.xhr.Poem.model.PoemItem;
 import com.xhr.Poem.view.CommonDialog;
@@ -251,6 +252,19 @@ public class MainActivity extends Activity {
             });
 
         }
+    }
+    @Override
+    protected void onPause() {
+        // TODO Auto-generated method stub
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
+
+    @Override
+    protected void onResume() {
+        // TODO Auto-generated method stub
+        super.onResume();
+        MobclickAgent.onResume(this);
     }
 
     public class PoemAdapter extends BaseAdapter {

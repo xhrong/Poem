@@ -15,6 +15,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="umeng-analytics-v5.4.2 (2)" level="project" />
   </component>
 </module>
 
