@@ -47,7 +47,7 @@ public class ContentActivity extends Activity {
     private static UMSocialService mController;
 
 
-    TextView tvTitle, tvAuthor, tvContent;
+    TextView tvTitle, tvAuthor, tvContent, tvDescription;
     Button btnBack, btnLove, btnComment, btnViewComment;
     // ImageView ivFontBig, ivFontSmall;
 
@@ -99,7 +99,7 @@ public class ContentActivity extends Activity {
      */
     private void setShareContent() {
         mController = UMServiceFactory.getUMSocialService("com.umeng.share");
-        mController.getConfig().setPlatforms(SHARE_MEDIA.WEIXIN, SHARE_MEDIA.WEIXIN_CIRCLE, SHARE_MEDIA.QQ, SHARE_MEDIA.QZONE,SHARE_MEDIA.EVERNOTE);
+        mController.getConfig().setPlatforms(SHARE_MEDIA.WEIXIN, SHARE_MEDIA.WEIXIN_CIRCLE, SHARE_MEDIA.QQ, SHARE_MEDIA.QZONE, SHARE_MEDIA.EVERNOTE);
         UMImage localImage = new UMImage(ContentActivity.this, R.drawable.icon);
 
         // 设置微信朋友圈分享的内容
@@ -196,6 +196,7 @@ public class ContentActivity extends Activity {
         QZoneSsoHandler qZoneSsoHandler = new QZoneSsoHandler(ContentActivity.this, appId, appKey);
         qZoneSsoHandler.addToSocialSDK();
     }
+
     /**
      * 添加印象笔记平台
      */
@@ -208,7 +209,8 @@ public class ContentActivity extends Activity {
     private void initView() {
         tvTitle = (TextView) findViewById(R.id.tv_title);
         tvAuthor = (TextView) findViewById(R.id.tv_author);
-        tvContent = (TextView) findViewById(R.id.tv_desc);
+        tvContent = (TextView) findViewById(R.id.tv_content);
+        tvDescription = (TextView) findViewById(R.id.tv_desc);
         btnBack = (Button) findViewById(R.id.btn_back);
         btnLove = (Button) findViewById(R.id.btn_favorite);
         btnComment = (Button) findViewById(R.id.btnComment);
@@ -218,9 +220,9 @@ public class ContentActivity extends Activity {
         findViewById(R.id.ll_parent).setBackgroundResource(MainActivity.bgImgs[new Random().nextInt(8)]);
 
         tvTitle.setText(poemItem.getTitle());
-        tvAuthor.setText(tvAuthor.getText() + poemItem.getAuthor());
+        tvAuthor.setText(poemItem.getAuthor());
         tvContent.setText(Html.fromHtml(poemItem.getContent()));
-
+        tvDescription.setText(Html.fromHtml(poemItem.getDescription()));
         if (!canLoved) {
             btnLove.setVisibility(View.GONE);
         }

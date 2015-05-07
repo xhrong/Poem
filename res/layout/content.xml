@@ -23,21 +23,35 @@
                 android:layout_height="0.0dip" android:layout_margin="8.0dip" android:layout_weight="1.0">
         <LinearLayout android:orientation="vertical" android:id="@id/linearLayout1" android:layout_width="fill_parent"
                       android:layout_height="fill_parent">
-            <TextView android:textAppearance="?android:textAppearanceMedium" android:id="@id/tv_title"
+            <TextView android:textAppearance="?android:textAppearanceLarge" android:id="@id/tv_title"
                       android:layout_width="fill_parent" android:layout_height="wrap_content"
+                      android:gravity="center"
                       android:layout_margin="5.0dip" android:text="标题" style="@style/black_normal"/>
-            <LinearLayout android:background="#ff666666" android:layout_width="fill_parent"
-                          android:layout_height="1.0px" android:layout_marginLeft="5.0dip"
-                          android:layout_marginRight="5.0dip"/>
-            <TextView android:textAppearance="?android:textAppearanceSmall" android:id="@id/tv_author"
+
+            <TextView android:textAppearance="?android:textAppearanceMedium" android:id="@id/tv_author"
                       android:layout_width="fill_parent" android:layout_height="wrap_content"
+                      android:gravity="center"
                       android:layout_margin="5.0dip" android:text="作者" style="@style/black_normal"/>
-            <LinearLayout android:background="#ff666666" android:layout_width="fill_parent"
-                          android:layout_height="1.0px" android:layout_marginLeft="5.0dip"
-                          android:layout_marginRight="5.0dip"/>
+
+            <TextView android:textAppearance="?android:textAppearanceLarge" android:id="@+id/tv_content"
+                      android:layout_width="fill_parent" android:layout_height="fill_parent"
+                      android:gravity="center"
+                      android:layout_marginTop="10dp"  android:layout_marginLeft="5.0dip"
+                      android:layout_marginRight="5.0dip" android:text="内容" android:lineSpacingMultiplier="1.3"
+                      style="@style/black_normal"/>
+            <LinearLayout android:orientation="horizontal" android:layout_width="fill_parent"
+                          android:layout_height="wrap_content"
+                          android:layout_marginTop="20dp"
+                          android:layout_marginLeft="5.0dip"
+                          android:layout_marginRight="5.0dip">
+                <View android:layout_width="0dp" android:layout_weight="1"  android:background="#ff666666" android:layout_height="1px"></View>
+                <View android:layout_width="0dp"  android:layout_weight="1"  android:layout_height="1dp"></View>
+                </LinearLayout>
+
             <TextView android:textAppearance="?android:textAppearanceMedium" android:id="@id/tv_desc"
                       android:layout_width="fill_parent" android:layout_height="fill_parent"
-                      android:layout_margin="5.0dip" android:text="注解" android:lineSpacingMultiplier="1.3"
+                      android:layout_marginLeft="5.0dip"
+                      android:layout_marginRight="5.0dip" android:layout_marginTop="15dp" android:text="注解" android:lineSpacingMultiplier="1.3"
                       style="@style/black_normal"/>
         </LinearLayout>
     </ScrollView>
