@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">唐诗三百首</string>
     <string name="back">返回</string>
-    <string name="favorite">最爱</string>
+    <string name="favorite">我的作品</string>
     <string name="all">全部</string>
     <string name="search">搜索</string>
     <string name="auth">作者</string>
@@ -10,10 +10,14 @@
     <string name="content">内容</string>
     <string name="key">请输入查询关键字</string>
     <string name="msg_nodata">不好意思，没有相关诗作！</string>
-    <string name="comment">我要点评</string>
-    <string name="add_love">加入最爱</string>
+    <string name="comment">我要评论</string>
+    <string name="add_love">分享</string>
     <string name="view_comment">查看评论</string>
 
+    <string name="add_poem_title">我要写诗</string>
+    <string name="poem_title">标题：</string>
+    <string name="poem_author">作者：</string>
+    <string name="poem_content">内容：</string>
     <string name="dlg_search">搜索</string>
     <string name="dlg_cancel">取消</string>
     <string name="dlg_ok">确定</string>

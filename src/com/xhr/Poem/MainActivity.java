@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,10 +15,13 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.*;
 import com.umeng.analytics.MobclickAgent;
 import com.xhr.Poem.dal.PoemAccess;
+import com.xhr.Poem.model.CommentItem;
 import com.xhr.Poem.model.PoemItem;
 import com.xhr.Poem.view.CommonDialog;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -26,16 +30,20 @@ import java.util.Random;
  */
 public class MainActivity extends Activity {
 
+    public static int[] bgImgs = {R.drawable.bg1, R.drawable.bg2, R.drawable.bg3, R.drawable.bg4, R.drawable.bg5, R.drawable.bg6, R.drawable.bg7, R.drawable.bg8};
+
     private Context mContext;
 
     private ListView listView;
     private Button btnSearch, btnAll, btnLove;
-    private static List<PoemItem> poemItems = new ArrayList<PoemItem>();
-    private boolean canLoved = true;
-    PoemAdapter poemAdapter;
+    private ImageButton btnAdd;
 
+    private static List<PoemItem> poemItems = new ArrayList<PoemItem>();
+    //   private boolean canLoved = true;
+    private boolean isMyPoem = false;
+    PoemAdapter poemAdapter;
     PoemAccess poemAccess;
-    public static int[] bgImgs = {R.drawable.bg1, R.drawable.bg2, R.drawable.bg3, R.drawable.bg4, R.drawable.bg5, R.drawable.bg6, R.drawable.bg7, R.drawable.bg8};
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -53,8 +61,9 @@ public class MainActivity extends Activity {
         btnLove = (Button) findViewById(R.id.btn_favorite);
         btnAll = (Button) findViewById(R.id.btn_all);
         btnSearch = (Button) findViewById(R.id.btn_search);
+        btnAdd = (ImageButton) findViewById(R.id.ibtn_add);
+
         findViewById(R.id.root).setBackgroundResource(bgImgs[new Random().nextInt(8)]);
-        ;
         poemAdapter = new PoemAdapter(this, poemItems);
         listView.setAdapter(poemAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -62,7 +71,7 @@ public class MainActivity extends Activity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent intent = new Intent(MainActivity.this, ContentActivity.class);
                 intent.putExtra("id", poemItems.get(i).getId());
-                intent.putExtra("canLoved", canLoved);
+                intent.putExtra("isLoved", poemItems.get(i).getIsLoved());
                 intent.putExtra("title", poemItems.get(i).getTitle());
                 intent.putExtra("author", poemItems.get(i).getAuthor());
                 intent.putExtra("content", poemItems.get(i).getContent());
@@ -75,7 +84,7 @@ public class MainActivity extends Activity {
             @Override
             public boolean onItemLongClick(AdapterView<?> arg0, View view,
                                            int position, long id) {
-                if (!canLoved) {
+                if (isMyPoem) {
                     PoemItem temp = poemAdapter.getItem(position);
                     showDeleteDialog(temp);
                 }
@@ -89,7 +98,7 @@ public class MainActivity extends Activity {
         btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                 showSearchDialog();
+                showSearchDialog();
             }
         });
 
@@ -99,7 +108,7 @@ public class MainActivity extends Activity {
                 poemItems.clear();
                 poemItems.addAll(XhrApplication.getPoemItemList());
                 poemAdapter.notifyDataSetChanged();
-                canLoved = true;
+                isMyPoem = false;
                 setCurrent(btnAll);
             }
         });
@@ -110,8 +119,15 @@ public class MainActivity extends Activity {
                 poemItems.clear();
                 poemItems.addAll(poemAccess.getLovedPoems());
                 poemAdapter.notifyDataSetChanged();
-                canLoved = false;
+                isMyPoem = true;
                 setCurrent(btnLove);
+            }
+        });
+
+        btnAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showAddDialog();
             }
         });
 
@@ -186,6 +202,11 @@ public class MainActivity extends Activity {
         builder.create().show();
     }
 
+    public void showAddDialog() {
+        Intent intent = new Intent(MainActivity.this, AddPoemActivity.class);
+
+        startActivity(intent);
+    }
 
     public class SearchDialog extends Dialog {
         Context context;
@@ -243,7 +264,7 @@ public class MainActivity extends Activity {
                         poemItems.clear();
                         poemItems.addAll(temp);
                         poemAdapter.notifyDataSetChanged();
-                        canLoved = true;
+                        isMyPoem = false;
                         SearchDialog.this.dismiss();
                         setCurrent(btnSearch);
                     }
@@ -252,6 +273,7 @@ public class MainActivity extends Activity {
 
         }
     }
+
 
     @Override
     protected void onPause() {

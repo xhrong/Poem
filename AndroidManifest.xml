@@ -24,6 +24,11 @@
         <activity android:configChanges="keyboardHidden|orientation|screenSize" android:label="@string/app_name"
                   android:name=".ContentActivity" android:screenOrientation="portrait"/>
 
+
+        <activity android:theme="@style/Transparent"
+                  android:configChanges="keyboardHidden|orientation|screenSize"
+                  android:name=".AddPoemActivity" android:screenOrientation="portrait"/>
+
         <!-- Caution! Do not change this app key. It is only for demo usage. -->
         <meta-data android:name="UMENG_APPKEY" android:value="5549ee4867e58e67f8005788">
         </meta-data>
@@ -54,6 +59,7 @@
                   android:theme="@android:style/Theme.Translucent.NoTitleBar"
                   android:screenOrientation="portrait">
         </activity>
+
 
     </application>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>

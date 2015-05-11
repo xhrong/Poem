@@ -7,9 +7,8 @@ import com.xhr.Poem.dal.PoemAccess;
 
 
 public class WelcomeActivity extends Activity {
-    /**
-     * Called when the activity is first created.
-     */
+    private static boolean isCanceled = false;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -19,19 +18,31 @@ public class WelcomeActivity extends Activity {
             @Override
             public void run() {
                 try {
-                    PoemAccess poemAccess=new PoemAccess(WelcomeActivity.this);
+                    PoemAccess poemAccess = new PoemAccess(WelcomeActivity.this);
                     XhrApplication.setPoemItemList(poemAccess.getAllPoems());
                     Thread.sleep(1000);
-                    Intent intent = new Intent(WelcomeActivity.this, MainActivity.class);
-                    startActivity(intent);
+                    if (!isCanceled) {
+                        Intent intent = new Intent(WelcomeActivity.this, MainActivity.class);
+                        startActivity(intent);
+                    }
                     WelcomeActivity.this.finish();
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         }).start();
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        isCanceled = false;
+    }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        isCanceled = true;
     }
 
 }

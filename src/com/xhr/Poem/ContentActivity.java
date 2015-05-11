@@ -29,8 +29,10 @@ import com.xhr.Poem.dal.CommentAccess;
 import com.xhr.Poem.dal.PoemAccess;
 import com.xhr.Poem.model.CommentItem;
 import com.xhr.Poem.model.PoemItem;
+import com.xhr.Poem.util.StringUtil;
 import com.xhr.Poem.view.CommonDialog;
 
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -42,7 +44,7 @@ import java.util.Random;
  */
 public class ContentActivity extends Activity {
 
-    private final static String appDownloadPage = "http://www.cnblogs.com/GrateSea/articles/4485388.html";
+    private final static String appDownloadPage = "http://xhrong.xicp.net:14468/";
 
     private static UMSocialService mController;
 
@@ -54,7 +56,7 @@ public class ContentActivity extends Activity {
     PoemItem poemItem;
 
     List<CommentItem> commentItems = new ArrayList<CommentItem>();
-    boolean canLoved = true;
+
     CommentAccess commentAccess;
     PoemAccess poemAccess;
 
@@ -75,8 +77,9 @@ public class ContentActivity extends Activity {
         poemItem.setAuthor(intent.getStringExtra("author"));
         poemItem.setContent(intent.getStringExtra("content"));
         poemItem.setDescription(intent.getStringExtra("description"));
+        poemItem.setIsLoved(intent.getIntExtra("isLoved",0));
         poemItem.setId(intent.getIntExtra("id", -1));
-        canLoved = intent.getBooleanExtra("canLoved", true);
+
 
         commentAccess = new CommentAccess(this);
         poemAccess = new PoemAccess(this);
@@ -131,7 +134,10 @@ public class ContentActivity extends Activity {
         qqShareContent.setShareContent(poemItem.getContent().replace("<br />", "\r\n"));
         qqShareContent.setShareImage(localImage);
         qqShareContent.setTitle(poemItem.getTitle() + "  " + poemItem.getAuthor());
-        qqShareContent.setTargetUrl(appDownloadPage);
+        String targetUrl = appDownloadPage + "?title=" +toURLEncoded(poemItem.getTitle())
+                +"&author="+toURLEncoded(poemItem.getAuthor())
+                +"&content="+ toURLEncoded(poemItem.getContent().replace("<br />","<br>"));
+        qqShareContent.setTargetUrl(targetUrl);
         mController.setShareMedia(qqShareContent);
 
         // 设置evernote的分享内容
@@ -140,6 +146,23 @@ public class ContentActivity extends Activity {
         evernoteShareContent.setShareImage(localImage);
         evernoteShareContent.setTargetUrl(appDownloadPage);
         mController.setShareMedia(evernoteShareContent);
+    }
+
+
+    public static String toURLEncoded(String paramString) {
+        if (paramString == null || paramString.equals("")) {
+            return "";
+        }
+
+        try {
+            String str = new String(paramString.getBytes(), "UTF-8");
+            str = URLEncoder.encode(str, "UTF-8");
+            return str;
+        } catch (Exception localException) {
+
+        }
+
+        return "";
     }
 
     /**
@@ -221,11 +244,19 @@ public class ContentActivity extends Activity {
 
         tvTitle.setText(poemItem.getTitle());
         tvAuthor.setText(poemItem.getAuthor());
-        tvContent.setText(Html.fromHtml(poemItem.getContent()));
-        tvDescription.setText(Html.fromHtml(poemItem.getDescription()));
-        if (!canLoved) {
-            btnLove.setVisibility(View.GONE);
+        if(poemItem.getIsLoved()==1){
+            tvContent.setText(poemItem.getContent());
+            tvDescription.setText(poemItem.getDescription());
+        }else{
+            tvContent.setText(Html.fromHtml(poemItem.getContent()));
+            if(!StringUtil.isEmpty(poemItem.getDescription())){
+                tvDescription.setText(Html.fromHtml(poemItem.getDescription()));
+            }else{
+                tvDescription.setText("");
+            }
         }
+
+
 
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -237,10 +268,6 @@ public class ContentActivity extends Activity {
         btnLove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                poemItem.setIsLoved(1);
-//                poemAccess.updatePoem(poemItem);
-//                Toast.makeText(ContentActivity.this, "添加成功", Toast.LENGTH_SHORT).show();
-
                 mController.openShare(ContentActivity.this, false);
             }
         });

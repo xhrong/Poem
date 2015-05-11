@@ -98,7 +98,7 @@ public class PoemAccess {
 
     public List<PoemItem> getAllPoems() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.rawQuery("select * from " + TABLE_NAME, null);
+        Cursor cursor = db.rawQuery("select * from " + TABLE_NAME +" where is_loved=0", null);
         List<PoemItem> allPoems = new ArrayList<PoemItem>();
         while (cursor.moveToNext()) {
             allPoems.add(generatePoemItem(cursor));

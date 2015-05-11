@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="fill_parent"
+              android:layout_height="wrap_content"
+              android:layout_gravity="center"
+              android:background="@drawable/bg_bombbox"
+              android:orientation="vertical">
+
+    <TextView
+            android:id="@+id/title"
+            style="@style/text_18_ffffff"
+            android:layout_width="fill_parent"
+            android:layout_height="40.0dip"
+            android:gravity="center"
+            android:text="@string/add_poem_title"
+            android:visibility="visible"/>
+
+    <LinearLayout android:layout_marginRight="10dp"
+                  android:layout_marginTop="10dp"
+                  android:layout_marginLeft="10dp" android:layout_gravity="center_horizontal"
+                  android:orientation="horizontal" android:layout_width="fill_parent"
+                  android:layout_height="wrap_content">
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/poem_title"/>
+        <EditText
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/etTitle"/>
+    </LinearLayout>
+    <LinearLayout android:layout_marginRight="10dp"
+                  android:layout_marginLeft="10dp" android:orientation="horizontal" android:layout_width="fill_parent"
+                  android:layout_height="wrap_content">
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/poem_author"/>
+        <EditText
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:hint="佚名"
+                android:id="@+id/etAuthor"/>
+    </LinearLayout>
+    <LinearLayout android:layout_marginRight="10dp"
+                  android:layout_marginLeft="10dp" android:orientation="horizontal" android:layout_width="fill_parent"
+                  android:layout_height="wrap_content">
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/poem_content"/>
+        <EditText
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textMultiLine"
+                android:minLines="4"
+                android:maxLines="8"
+                android:id="@+id/etContent"/>
+    </LinearLayout>
+
+    <LinearLayout android:layout_margin="10dp"
+                  android:layout_width="fill_parent"
+                  android:layout_height="wrap_content"
+                  android:layout_gravity="bottom"
+                  android:gravity="center"
+                  android:orientation="horizontal">
+
+        <Button
+                android:id="@+id/positiveButton"
+                style="@style/text_15_ffffff_sdw"
+                android:layout_width="114.0dip"
+                android:layout_height="40.0dip"
+                android:background="@drawable/btn_ok_selector"
+                android:gravity="center"
+                android:text="@string/dlg_ok"/>
+
+        <Button
+                android:id="@+id/negativeButton"
+                style="@style/text_15_666666_sdw"
+                android:layout_width="114.0dip"
+                android:layout_height="40.0dip"
+                android:layout_marginLeft="20.0dip"
+                android:background="@drawable/btn_cancel_selector"
+                android:gravity="center"
+                android:text="@string/dlg_cancel"/>
+    </LinearLayout>
+</LinearLayout>
