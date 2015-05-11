@@ -33,7 +33,7 @@
                       android:gravity="center"
                       android:layout_margin="5.0dip" android:text="作者" style="@style/black_normal"/>
 
-            <TextView android:textAppearance="?android:textAppearanceLarge" android:id="@+id/tv_content"
+            <TextView android:textSize="20sp" android:id="@+id/tv_content"
                       android:layout_width="fill_parent" android:layout_height="fill_parent"
                       android:gravity="center"
                       android:layout_marginTop="10dp"  android:layout_marginLeft="5.0dip"
