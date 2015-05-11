@@ -194,8 +194,8 @@ public class ContentFragment extends Fragment {
      * : 用户点击该分享时跳转到的目标地址 [必填] ( 若不填写则默认设置为友盟主页 )
      */
     private void addQQQZonePlatform() {
-        String appId = "100424468";
-        String appKey = "c7394704798a158208a74ab60104f0ba";
+        String appId = "1104632240";
+        String appKey = "nzcsq57JKtxdqZkb";
         // 添加QQ支持, 并且设置QQ分享内容的target url
         UMQQSsoHandler qqSsoHandler = new UMQQSsoHandler(getActivity(),
                 appId, appKey);
