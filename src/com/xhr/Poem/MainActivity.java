@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.*;
 import com.umeng.analytics.MobclickAgent;
-import com.xhr.Poem.dal.PoemAccess;
 import com.xhr.Poem.model.PoemItem;
 import com.xhr.Poem.view.CommonDialog;
 
@@ -30,27 +29,20 @@ public class MainActivity extends Activity {
 
     public static final int ADD_POEM_CODE = 0x001;
 
-    private Context mContext;
-
     private ListView listView;
     private Button btnSearch, btnAll, btnLove;
     private ImageButton btnAdd;
 
-    private static List<PoemItem> poemItems = new ArrayList<PoemItem>();
-    //   private boolean canLoved = true;
+
     private boolean isMyPoem = false;
     PoemAdapter poemAdapter;
-    PoemAccess poemAccess;
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        mContext = this;
-        poemAccess = new PoemAccess(this);
-        poemItems.clear();
-        poemItems.addAll(XhrApplication.getPoemItemList());
+        AppState.getCurrentPoems().clear();
+        AppState.getCurrentPoems().addAll(AppState.getClassicPoems());
         initView();
     }
 
@@ -60,8 +52,8 @@ public class MainActivity extends Activity {
             case ADD_POEM_CODE:
                 if (resultCode == RESULT_OK) {
                     if (isMyPoem) {
-                        poemItems.clear();
-                        poemItems.addAll(poemAccess.getLovedPoems());
+                        AppState.getCurrentPoems().clear();
+                        AppState.getCurrentPoems().addAll(AppState.getPoemAccess().getLovedPoems());
                         poemAdapter.notifyDataSetChanged();
                     }
                 } else if (resultCode == RESULT_CANCELED) {
@@ -78,18 +70,19 @@ public class MainActivity extends Activity {
         btnAdd = (ImageButton) findViewById(R.id.ibtn_add);
 
         findViewById(R.id.root).setBackgroundResource(bgImgs[new Random().nextInt(8)]);
-        poemAdapter = new PoemAdapter(this, poemItems);
+        poemAdapter = new PoemAdapter(this, AppState.getCurrentPoems());
         listView.setAdapter(poemAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(MainActivity.this, ContentActivity.class);
-                intent.putExtra("id", poemItems.get(i).getId());
-                intent.putExtra("isLoved", poemItems.get(i).getIsLoved());
-                intent.putExtra("title", poemItems.get(i).getTitle());
-                intent.putExtra("author", poemItems.get(i).getAuthor());
-                intent.putExtra("content", poemItems.get(i).getContent());
-                intent.putExtra("description", poemItems.get(i).getDescription());
+                Intent intent = new Intent(MainActivity.this, DetailActivity.class);
+                intent.putExtra("position",i);
+//                intent.putExtra("id", poemItems.get(i).getId());
+//                intent.putExtra("isLoved", poemItems.get(i).getIsLoved());
+//                intent.putExtra("title", poemItems.get(i).getTitle());
+//                intent.putExtra("author", poemItems.get(i).getAuthor());
+//                intent.putExtra("content", poemItems.get(i).getContent());
+//                intent.putExtra("description", poemItems.get(i).getDescription());
                 startActivity(intent);
             }
         });
@@ -119,8 +112,8 @@ public class MainActivity extends Activity {
         btnAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                poemItems.clear();
-                poemItems.addAll(XhrApplication.getPoemItemList());
+                AppState.getCurrentPoems().clear();
+                AppState.getCurrentPoems().addAll(AppState.getClassicPoems());
                 poemAdapter.notifyDataSetChanged();
                 isMyPoem = false;
                 setCurrent(btnAll);
@@ -130,8 +123,8 @@ public class MainActivity extends Activity {
         btnLove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                poemItems.clear();
-                poemItems.addAll(poemAccess.getLovedPoems());
+                AppState.getCurrentPoems().clear();
+                AppState.getCurrentPoems().addAll(AppState.getPoemAccess().getLovedPoems());
                 poemAdapter.notifyDataSetChanged();
                 isMyPoem = true;
                 setCurrent(btnLove);
@@ -197,10 +190,10 @@ public class MainActivity extends Activity {
         builder.setPositiveButton("删除", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
-                poemItems.remove(poemItem);
+                AppState.getCurrentPoems().remove(poemItem);
                 poemAdapter.notifyDataSetChanged();
                 poemItem.setIsLoved(0);
-                poemAccess.updatePoem(poemItem);
+                AppState.getPoemAccess().updatePoem(poemItem);
                 //设置你的操作事项
             }
         });
@@ -259,23 +252,23 @@ public class MainActivity extends Activity {
                     if (searchText != null && !searchText.equals("")) {
                         List<PoemItem> temp = new ArrayList<PoemItem>();
                         if (rb_auth.isChecked()) {
-                            for (PoemItem ciInfo : XhrApplication.getPoemItemList()) {
+                            for (PoemItem ciInfo : AppState.getClassicPoems()) {
                                 if (ciInfo.getAuthor().contains(searchText))
                                     temp.add(ciInfo);
                             }
                         } else if (rb_title.isChecked()) {
-                            for (PoemItem ciInfo : XhrApplication.getPoemItemList()) {
+                            for (PoemItem ciInfo : AppState.getClassicPoems()) {
                                 if (ciInfo.getTitle().contains(searchText))
                                     temp.add(ciInfo);
                             }
                         } else {
-                            for (PoemItem ciInfo : XhrApplication.getPoemItemList()) {
+                            for (PoemItem ciInfo : AppState.getClassicPoems()) {
                                 if (ciInfo.getContent().contains(searchText))
                                     temp.add(ciInfo);
                             }
                         }
-                        poemItems.clear();
-                        poemItems.addAll(temp);
+                        AppState.getCurrentPoems().clear();
+                        AppState.getCurrentPoems().addAll(temp);
                         poemAdapter.notifyDataSetChanged();
                         isMyPoem = false;
                         SearchDialog.this.dismiss();

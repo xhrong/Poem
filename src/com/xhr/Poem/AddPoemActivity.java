@@ -6,7 +6,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-import com.xhr.Poem.dal.PoemAccess;
 import com.xhr.Poem.model.PoemItem;
 import com.xhr.Poem.util.StringUtil;
 
@@ -17,16 +16,13 @@ public class AddPoemActivity extends Activity {
 
     EditText etTitle, etAuthor, etContent;
     Button btnOK, btnCancel;
-    PoemAccess poemAccess;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_poem);
-        poemAccess = new PoemAccess(this);
         initView();
     }
-
 
     private void initView() {
         etTitle = (EditText) findViewById(R.id.etTitle);
@@ -67,7 +63,7 @@ public class AddPoemActivity extends Activity {
                 poemItem.setIsLoved(1);
                 poemItem.setDescription("");
                 poemItem.setCategory("");
-                poemAccess.addPoem(poemItem);
+                AppState.getPoemAccess().addPoem(poemItem);
                 Toast.makeText(AddPoemActivity.this, "添加成功", Toast.LENGTH_LONG).show();
                 AddPoemActivity.this.setResult(RESULT_OK);
                 AddPoemActivity.this.finish();

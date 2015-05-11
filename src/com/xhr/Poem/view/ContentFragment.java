@@ -1,10 +1,10 @@
-package com.xhr.Poem;
+package com.xhr.Poem.view;
 
-import android.app.Activity;
+
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.text.InputType;
 import android.util.Log;
@@ -25,12 +25,12 @@ import com.umeng.socialize.sso.UMQQSsoHandler;
 import com.umeng.socialize.weixin.controller.UMWXHandler;
 import com.umeng.socialize.weixin.media.CircleShareContent;
 import com.umeng.socialize.weixin.media.WeiXinShareContent;
-import com.xhr.Poem.dal.CommentAccess;
-import com.xhr.Poem.dal.PoemAccess;
+import com.xhr.Poem.AppState;
+import com.xhr.Poem.MainActivity;
+import com.xhr.Poem.R;
 import com.xhr.Poem.model.CommentItem;
 import com.xhr.Poem.model.PoemItem;
 import com.xhr.Poem.util.StringUtil;
-import com.xhr.Poem.view.CommonDialog;
 
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
@@ -40,61 +40,48 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Created by xhrong on 2015/4/6.
+ * Created by xhrong on 2015/5/11.
  */
-public class ContentActivity extends Activity {
+public class ContentFragment extends Fragment {
 
     private final static String appDownloadPage = "http://xhrong.xicp.net:14468/";
 
     private static UMSocialService mController;
 
+    PoemItem poemItem;
+    List<CommentItem> commentItems = new ArrayList<CommentItem>();
+
+  //  CommentAccess commentAccess;
 
     TextView tvTitle, tvAuthor, tvContent, tvDescription;
     Button btnBack, btnLove, btnComment, btnViewComment;
-    // ImageView ivFontBig, ivFontSmall;
 
-    PoemItem poemItem;
+    public static ContentFragment newInstance(PoemItem poemItem) {
+        return new ContentFragment(poemItem);
+    }
 
-    List<CommentItem> commentItems = new ArrayList<CommentItem>();
+    public ContentFragment(PoemItem poemItem) {
+        this.poemItem = poemItem;
+    }
 
-    CommentAccess commentAccess;
-    PoemAccess poemAccess;
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.content, container, false);
 
-    private static final float MAX_FONT_SIZE = 40f;
-    private static final float MIN_FONT_SIZE = 20f;
-
-
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.content);
-
-
-        Intent intent = getIntent();
-        if (intent == null) finish();
-
-        poemItem = new PoemItem();
-        poemItem.setTitle(intent.getStringExtra("title"));
-        poemItem.setAuthor(intent.getStringExtra("author"));
-        poemItem.setContent(intent.getStringExtra("content"));
-        poemItem.setDescription(intent.getStringExtra("description"));
-        poemItem.setIsLoved(intent.getIntExtra("isLoved",0));
-        poemItem.setId(intent.getIntExtra("id", -1));
-
-
-        commentAccess = new CommentAccess(this);
-        poemAccess = new PoemAccess(this);
+      //  commentAccess = new CommentAccess(getActivity());
         try {
-            commentItems = commentAccess.getComments(poemItem.getId());
+            commentItems = AppState.getCommentAccess().getComments(poemItem.getId());
             Log.e("COUNT:", commentItems.size() + "");
         } catch (Exception e) {
 
         }
-        initView();
+        initView(rootView);
 
         // 配置需要分享的相关平台
         configPlatforms();
-        // 设置分享的内容
-        setShareContent();
+
+        return rootView;
     }
 
     /**
@@ -103,7 +90,7 @@ public class ContentActivity extends Activity {
     private void setShareContent() {
         mController = UMServiceFactory.getUMSocialService("com.umeng.share");
         mController.getConfig().setPlatforms(SHARE_MEDIA.WEIXIN, SHARE_MEDIA.WEIXIN_CIRCLE, SHARE_MEDIA.QQ, SHARE_MEDIA.QZONE, SHARE_MEDIA.EVERNOTE);
-        UMImage localImage = new UMImage(ContentActivity.this, R.drawable.icon);
+        UMImage localImage = new UMImage(getActivity(), R.drawable.icon);
 
         // 设置微信朋友圈分享的内容
         CircleShareContent circleShareContent = new CircleShareContent();
@@ -190,11 +177,11 @@ public class ContentActivity extends Activity {
         String appId = "wx967daebe835fbeac";
         String appSecret = "5bb696d9ccd75a38c8a0bfe0675559b3";
         // 添加微信平台
-        UMWXHandler wxHandler = new UMWXHandler(ContentActivity.this, appId, appSecret);
+        UMWXHandler wxHandler = new UMWXHandler(getActivity(), appId, appSecret);
         wxHandler.addToSocialSDK();
 
         // 支持微信朋友圈
-        UMWXHandler wxCircleHandler = new UMWXHandler(ContentActivity.this, appId, appSecret);
+        UMWXHandler wxCircleHandler = new UMWXHandler(getActivity(), appId, appSecret);
         wxCircleHandler.setToCircle(true);
         wxCircleHandler.addToSocialSDK();
     }
@@ -210,13 +197,13 @@ public class ContentActivity extends Activity {
         String appId = "100424468";
         String appKey = "c7394704798a158208a74ab60104f0ba";
         // 添加QQ支持, 并且设置QQ分享内容的target url
-        UMQQSsoHandler qqSsoHandler = new UMQQSsoHandler(ContentActivity.this,
+        UMQQSsoHandler qqSsoHandler = new UMQQSsoHandler(getActivity(),
                 appId, appKey);
         qqSsoHandler.setTargetUrl("http://www.umeng.com/social");
         qqSsoHandler.addToSocialSDK();
 
         // 添加QZone平台
-        QZoneSsoHandler qZoneSsoHandler = new QZoneSsoHandler(ContentActivity.this, appId, appKey);
+        QZoneSsoHandler qZoneSsoHandler = new QZoneSsoHandler(getActivity(), appId, appKey);
         qZoneSsoHandler.addToSocialSDK();
     }
 
@@ -224,23 +211,23 @@ public class ContentActivity extends Activity {
      * 添加印象笔记平台
      */
     private void addEverNote() {
-        UMEvernoteHandler evernoteHandler = new UMEvernoteHandler(ContentActivity.this);
+        UMEvernoteHandler evernoteHandler = new UMEvernoteHandler(getActivity());
         evernoteHandler.addToSocialSDK();
     }
 
 
-    private void initView() {
-        tvTitle = (TextView) findViewById(R.id.tv_title);
-        tvAuthor = (TextView) findViewById(R.id.tv_author);
-        tvContent = (TextView) findViewById(R.id.tv_content);
-        tvDescription = (TextView) findViewById(R.id.tv_desc);
-        btnBack = (Button) findViewById(R.id.btn_back);
-        btnLove = (Button) findViewById(R.id.btn_favorite);
-        btnComment = (Button) findViewById(R.id.btnComment);
-        btnViewComment = (Button) findViewById(R.id.btnViewComment);
+    private void initView(View rootView) {
+        tvTitle = (TextView) rootView.findViewById(R.id.tv_title);
+        tvAuthor = (TextView) rootView.findViewById(R.id.tv_author);
+        tvContent = (TextView) rootView.findViewById(R.id.tv_content);
+        tvDescription = (TextView) rootView.findViewById(R.id.tv_desc);
+        btnBack = (Button) rootView.findViewById(R.id.btn_back);
+        btnLove = (Button) rootView.findViewById(R.id.btn_favorite);
+        btnComment = (Button) rootView.findViewById(R.id.btnComment);
+        btnViewComment = (Button) rootView.findViewById(R.id.btnViewComment);
         //  ivFontBig = (ImageView) findViewById(R.id.iv_font_big);
         //ivFontSmall = (ImageView) findViewById(R.id.iv_font_small);
-        findViewById(R.id.ll_parent).setBackgroundResource(MainActivity.bgImgs[new Random().nextInt(8)]);
+        rootView.findViewById(R.id.ll_parent).setBackgroundResource(MainActivity.bgImgs[new Random().nextInt(8)]);
 
         tvTitle.setText(poemItem.getTitle());
         tvAuthor.setText(poemItem.getAuthor());
@@ -261,14 +248,17 @@ public class ContentActivity extends Activity {
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ContentActivity.this.finish();
+                getActivity().finish();
             }
         });
 
         btnLove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mController.openShare(ContentActivity.this, false);
+
+                // 设置分享的内容
+                setShareContent();
+                mController.openShare(getActivity(), false);
             }
         });
 
@@ -291,14 +281,14 @@ public class ContentActivity extends Activity {
 
 
     public void showViewCommentDialog(final PoemItem poemItem) {
-        CommonDialog.Builder builder = new CommonDialog.Builder(this);
+        CommonDialog.Builder builder = new CommonDialog.Builder(getActivity());
 
 
         if (commentItems.size() > 0) {
-            final ListView listView = new ListView(this);
+            final ListView listView = new ListView(getActivity());
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
             listView.setLayoutParams(lp);
-            listView.setAdapter(new CommentAdapter(this, commentItems));
+            listView.setAdapter(new CommentAdapter(getActivity(), commentItems));
             builder.setContentView(listView);
         } else {
             builder.setMessage("暂无评论");
@@ -317,8 +307,8 @@ public class ContentActivity extends Activity {
     }
 
     public void showCommentDialog(final PoemItem poemItem) {
-        CommonDialog.Builder builder = new CommonDialog.Builder(this);
-        final EditText editText = new EditText(this);
+        CommonDialog.Builder builder = new CommonDialog.Builder(getActivity());
+        final EditText editText = new EditText(getActivity());
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         lp.setMargins(10, 15, 10, 10);
         //  editText.setPadding(10,5,10,5);
@@ -336,15 +326,14 @@ public class ContentActivity extends Activity {
                     CommentItem temp = new CommentItem();
                     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
                     temp.setAddDate(format.format(new Date()));
-                    //  temp.setid = System.currentTimeMillis() + "";
                     temp.setContent(data);
                     temp.setPoemId(poemItem.getId());
                     commentItems.add(0, temp);
-                    commentAccess.addComment(temp);
+                    AppState.getCommentAccess().addComment(temp);
 
                     dialog.dismiss();
                 } else {
-                    Toast.makeText(ContentActivity.this, "评论内容不能为空", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "评论内容不能为空", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -430,4 +419,5 @@ public class ContentActivity extends Activity {
         TextView data;
         TextView createDate;
     }
+
 }

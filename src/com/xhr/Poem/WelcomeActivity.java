@@ -7,6 +7,7 @@ import com.xhr.Poem.dal.PoemAccess;
 
 
 public class WelcomeActivity extends Activity {
+
     private static boolean isCanceled = false;
 
     @Override
@@ -19,7 +20,7 @@ public class WelcomeActivity extends Activity {
             public void run() {
                 try {
                     PoemAccess poemAccess = new PoemAccess(WelcomeActivity.this);
-                    XhrApplication.setPoemItemList(poemAccess.getAllPoems());
+                    AppState.setClassicPoems(poemAccess.getAllPoems());
                     Thread.sleep(1000);
                     if (!isCanceled) {
                         Intent intent = new Intent(WelcomeActivity.this, MainActivity.class);

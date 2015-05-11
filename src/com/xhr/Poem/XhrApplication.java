@@ -12,15 +12,6 @@ import java.util.List;
  */
 public class XhrApplication extends Application {
 
-    private static List<PoemItem> poemItemList = new ArrayList<PoemItem>();
-
-    public static List<PoemItem> getPoemItemList() {
-        return poemItemList;
-    }
-
-    public static void setPoemItemList(List<PoemItem> poemItems) {
-        poemItemList = poemItems;
-    }
 
 
     @Override
@@ -28,5 +19,7 @@ public class XhrApplication extends Application {
         super.onCreate();
         XhrDbHelper xhrDbHelper = XhrDbHelper.getInstance(getApplicationContext());
         xhrDbHelper.createDataBase();
+
+        AppState.initAppState(getApplicationContext());
     }
 }
