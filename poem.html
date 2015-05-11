@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>唐诗三百首</title>
+    <style>
+        body{TEXT-ALIGN: center;}
+        .center{
+          
+        }
+    </style>
+    <script>
+        function getQueryString(name) {
+            var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i');
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) {
+                return decodeURI(r[2]);
+            }
+            return null;
+        }
+
+        window.onload=function(){
+            var title=getQueryString("title");
+            var author=getQueryString("author");
+            var content=getQueryString("content");
+			
+			console.log(content);
+
+            var titleNode=document.getElementById("title");
+            var authorNode=document.getElementById("author");
+            var contentNode=document.getElementById("content");
+
+            if(title!=null){
+                titleNode.innerHTML=title;
+            }
+            if(author!=null){
+                authorNode.innerHTML=author;
+            }
+            if(content!=null){
+                contentNode.innerHTML=content;
+            }
+        }
+
+    </script>
+</head>
+<body>
+<div class="center">
+    <div id="title">中国</div>
+    <div id="author">你</div>
+    <div id="content">中国是中华人民共和国的简称</div>
+
+    <div id="cnblogs_post_body"><p><a title="APK" href="http://files.cnblogs.com/files/GrateSea/cal.apk" target="_blank">
+        App下载</a></p></div>
+</div>
+</body>
+</html>

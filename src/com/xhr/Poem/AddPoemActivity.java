@@ -18,14 +18,13 @@ public class AddPoemActivity extends Activity {
     EditText etTitle, etAuthor, etContent;
     Button btnOK, btnCancel;
     PoemAccess poemAccess;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_poem);
-        poemAccess=new PoemAccess(this);
+        poemAccess = new PoemAccess(this);
         initView();
-
-
     }
 
 
@@ -40,6 +39,7 @@ public class AddPoemActivity extends Activity {
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                AddPoemActivity.this.setResult(RESULT_CANCELED);
                 AddPoemActivity.this.finish();
             }
         });
@@ -53,14 +53,14 @@ public class AddPoemActivity extends Activity {
                 if (StringUtil.isEmpty(title) || StringUtil.isEmpty(content)) {
                     Toast.makeText(AddPoemActivity.this, "标题和内容不能为空", Toast.LENGTH_LONG).show();
                     return;
-                }else if(content.length()<20){
-                    Toast.makeText(AddPoemActivity.this,"内容不能少于20个字",Toast.LENGTH_LONG).show();
+                } else if (content.length() < 20) {
+                    Toast.makeText(AddPoemActivity.this, "内容不能少于20个字", Toast.LENGTH_LONG).show();
                     return;
                 }
                 if (StringUtil.isEmpty(author)) {
                     author = "佚名";
                 }
-                PoemItem poemItem=new PoemItem();
+                PoemItem poemItem = new PoemItem();
                 poemItem.setTitle(title);
                 poemItem.setAuthor(author);
                 poemItem.setContent(content);
@@ -69,7 +69,9 @@ public class AddPoemActivity extends Activity {
                 poemItem.setCategory("");
                 poemAccess.addPoem(poemItem);
                 Toast.makeText(AddPoemActivity.this, "添加成功", Toast.LENGTH_LONG).show();
+                AddPoemActivity.this.setResult(RESULT_OK);
                 AddPoemActivity.this.finish();
+
             }
         });
     }

@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.InputType;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,13 +14,10 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.*;
 import com.umeng.analytics.MobclickAgent;
 import com.xhr.Poem.dal.PoemAccess;
-import com.xhr.Poem.model.CommentItem;
 import com.xhr.Poem.model.PoemItem;
 import com.xhr.Poem.view.CommonDialog;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -31,6 +27,8 @@ import java.util.Random;
 public class MainActivity extends Activity {
 
     public static int[] bgImgs = {R.drawable.bg1, R.drawable.bg2, R.drawable.bg3, R.drawable.bg4, R.drawable.bg5, R.drawable.bg6, R.drawable.bg7, R.drawable.bg8};
+
+    public static final int ADD_POEM_CODE = 0x001;
 
     private Context mContext;
 
@@ -54,6 +52,22 @@ public class MainActivity extends Activity {
         poemItems.clear();
         poemItems.addAll(XhrApplication.getPoemItemList());
         initView();
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case ADD_POEM_CODE:
+                if (resultCode == RESULT_OK) {
+                    if (isMyPoem) {
+                        poemItems.clear();
+                        poemItems.addAll(poemAccess.getLovedPoems());
+                        poemAdapter.notifyDataSetChanged();
+                    }
+                } else if (resultCode == RESULT_CANCELED) {
+
+                }
+        }
     }
 
     private void initView() {
@@ -204,8 +218,7 @@ public class MainActivity extends Activity {
 
     public void showAddDialog() {
         Intent intent = new Intent(MainActivity.this, AddPoemActivity.class);
-
-        startActivity(intent);
+        startActivityForResult(intent, ADD_POEM_CODE);
     }
 
     public class SearchDialog extends Dialog {
