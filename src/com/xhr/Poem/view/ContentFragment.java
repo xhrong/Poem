@@ -4,6 +4,7 @@ package com.xhr.Poem.view;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.text.InputType;
@@ -30,8 +31,11 @@ import com.xhr.Poem.MainActivity;
 import com.xhr.Poem.R;
 import com.xhr.Poem.model.CommentItem;
 import com.xhr.Poem.model.PoemItem;
+import com.xhr.Poem.util.FileDownloader;
+import com.xhr.Poem.util.Player;
 import com.xhr.Poem.util.StringUtil;
 
+import java.io.File;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -51,10 +55,12 @@ public class ContentFragment extends Fragment {
     PoemItem poemItem;
     List<CommentItem> commentItems = new ArrayList<CommentItem>();
 
-  //  CommentAccess commentAccess;
 
-    TextView tvTitle, tvAuthor, tvContent, tvNotation,tvTranslation,tvAnalysis;
-    Button btnBack, btnLove, btnComment, btnViewComment;
+    TextView tvTitle, tvAuthor, tvContent, tvNotation, tvTranslation, tvAnalysis;
+    Button btnBack, btnLove, btnComment, btnViewComment, btnAudio;
+
+    private Player player;
+    private boolean isPaused = false;
 
     public static ContentFragment newInstance(PoemItem poemItem) {
         return new ContentFragment(poemItem);
@@ -69,13 +75,14 @@ public class ContentFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.content, container, false);
 
-      //  commentAccess = new CommentAccess(getActivity());
+        //  commentAccess = new CommentAccess(getActivity());
         try {
             commentItems = AppState.getCommentAccess().getComments(poemItem.getId());
             Log.e("COUNT:", commentItems.size() + "");
         } catch (Exception e) {
 
         }
+        player = new Player();
         initView(rootView);
 
         // 配置需要分享的相关平台
@@ -94,7 +101,7 @@ public class ContentFragment extends Fragment {
 
         // 设置微信朋友圈分享的内容
         CircleShareContent circleShareContent = new CircleShareContent();
-        circleShareContent.setShareContent(poemItem.getContent().replace("<br />", "\r\n"));
+        circleShareContent.setShareContent(poemItem.getContent().replace("<br>", "\r\n"));
         circleShareContent.setTitle(poemItem.getTitle() + "  " + poemItem.getAuthor());
         circleShareContent.setShareImage(localImage);
         circleShareContent.setTargetUrl(appDownloadPage);
@@ -102,7 +109,7 @@ public class ContentFragment extends Fragment {
 
         //设置微信分享内容
         WeiXinShareContent weiXinShareContent = new WeiXinShareContent();
-        weiXinShareContent.setShareContent(poemItem.getContent().replace("<br />", "\r\n"));
+        weiXinShareContent.setShareContent(poemItem.getContent().replace("<br>", "\r\n"));
         weiXinShareContent.setTitle(poemItem.getTitle() + "  " + poemItem.getAuthor());
         weiXinShareContent.setTargetUrl(appDownloadPage);
         weiXinShareContent.setShareMedia(localImage);
@@ -110,7 +117,7 @@ public class ContentFragment extends Fragment {
 
         // 设置QQ空间分享内容
         QZoneShareContent qZoneShareContent = new QZoneShareContent();
-        qZoneShareContent.setShareContent(poemItem.getContent().replace("<br />", "\r\n"));
+        qZoneShareContent.setShareContent(poemItem.getContent().replace("<br>", "\r\n"));
         qZoneShareContent.setShareImage(localImage);
         qZoneShareContent.setTargetUrl(appDownloadPage);
         qZoneShareContent.setTitle(poemItem.getTitle() + "  " + poemItem.getAuthor());
@@ -118,17 +125,17 @@ public class ContentFragment extends Fragment {
 
         //设置QQ分享内容
         QQShareContent qqShareContent = new QQShareContent();
-        qqShareContent.setShareContent(poemItem.getContent().replace("<br />", "\r\n"));
+        qqShareContent.setShareContent(poemItem.getContent().replace("<br>", "\r\n"));
         qqShareContent.setShareImage(localImage);
         qqShareContent.setTitle(poemItem.getTitle() + "  " + poemItem.getAuthor());
-        String targetUrl = appDownloadPage + "?title=" +toURLEncoded(poemItem.getTitle())
-                +"&author="+toURLEncoded(poemItem.getAuthor())
-                +"&content="+ toURLEncoded(poemItem.getContent().replace("<br />","<br>"));
+        String targetUrl = appDownloadPage + "?title=" + toURLEncoded(poemItem.getTitle())
+                + "&author=" + toURLEncoded(poemItem.getAuthor())
+                + "&content=" + toURLEncoded(poemItem.getContent());
         qqShareContent.setTargetUrl(targetUrl);
         mController.setShareMedia(qqShareContent);
 
         // 设置evernote的分享内容
-        EvernoteShareContent evernoteShareContent = new EvernoteShareContent(poemItem.getContent().replace("<br />", "\r\n"));
+        EvernoteShareContent evernoteShareContent = new EvernoteShareContent(poemItem.getContent().replace("<br>", "\r\n"));
         evernoteShareContent.setTitle(poemItem.getTitle() + "  " + poemItem.getAuthor());
         evernoteShareContent.setShareImage(localImage);
         evernoteShareContent.setTargetUrl(appDownloadPage);
@@ -221,11 +228,12 @@ public class ContentFragment extends Fragment {
         tvAuthor = (TextView) rootView.findViewById(R.id.tv_author);
         tvContent = (TextView) rootView.findViewById(R.id.tv_content);
         tvNotation = (TextView) rootView.findViewById(R.id.tvNotation);
-        tvTranslation=(TextView)rootView.findViewById(R.id.tvTranslation);
-        tvAnalysis=(TextView)rootView.findViewById(R.id.tvAnalysis);
+        tvTranslation = (TextView) rootView.findViewById(R.id.tvTranslation);
+        tvAnalysis = (TextView) rootView.findViewById(R.id.tvAnalysis);
         btnBack = (Button) rootView.findViewById(R.id.btn_back);
         btnLove = (Button) rootView.findViewById(R.id.btn_favorite);
         btnComment = (Button) rootView.findViewById(R.id.btnComment);
+        btnAudio = (Button) rootView.findViewById(R.id.btnAudio);
         btnViewComment = (Button) rootView.findViewById(R.id.btnViewComment);
         //  ivFontBig = (ImageView) findViewById(R.id.iv_font_big);
         //ivFontSmall = (ImageView) findViewById(R.id.iv_font_small);
@@ -233,30 +241,29 @@ public class ContentFragment extends Fragment {
 
         tvTitle.setText(poemItem.getTitle());
         tvAuthor.setText(poemItem.getAuthor());
-        if(poemItem.getIsLoved()==1){
+        if (poemItem.getIsLoved() == 1) {
             tvContent.setText(poemItem.getContent());
-            tvNotation.setText("注解：\n"+ poemItem.getNotation());
-            tvTranslation.setText("翻译：\n"+poemItem.getTranslation());
-            tvAnalysis.setText("赏析：\n"+poemItem.getAnalysis());
-        }else{
+            tvNotation.setText("");
+            tvTranslation.setText("");
+            tvAnalysis.setText("");
+        } else {
             tvContent.setText(Html.fromHtml(poemItem.getContent()));
-            if(!StringUtil.isEmpty(poemItem.getNotation())){
-                tvNotation.setText("注解：\n"+ Html.fromHtml(poemItem.getNotation()));
-            }else{
-                tvNotation.setText("注解："+ "暂无");
+            if (!StringUtil.isEmpty(poemItem.getNotation())) {
+                tvNotation.setText(Html.fromHtml("<strong>注解：</strong><br>" + poemItem.getNotation()));
+            } else {
+                tvNotation.setText(Html.fromHtml("<strong>注解：</strong>暂无"));
             }
-            if(!StringUtil.isEmpty(poemItem.getTranslation())){
-                tvTranslation.setText("翻译：\n"+Html.fromHtml(poemItem.getTranslation()));
-            }else{
-                tvTranslation.setText("翻译："+"暂无");
+            if (!StringUtil.isEmpty(poemItem.getTranslation())) {
+                tvTranslation.setText(Html.fromHtml("<strong>翻译：</strong><br>" + poemItem.getTranslation()));
+            } else {
+                tvTranslation.setText(Html.fromHtml("<strong>翻译：</strong>暂无"));
             }
-            if(!StringUtil.isEmpty(poemItem.getAnalysis())){
-                tvAnalysis.setText("赏析：\n"+Html.fromHtml(poemItem.getAnalysis()));
-            }else{
-                tvAnalysis.setText("赏析："+"暂无");
+            if (!StringUtil.isEmpty(poemItem.getAnalysis())) {
+                tvAnalysis.setText(Html.fromHtml("<strong>赏析：</strong><br>" + poemItem.getAnalysis()));
+            } else {
+                tvAnalysis.setText(Html.fromHtml("<strong>赏析：</strong>暂无"));
             }
         }
-
 
 
         btnBack.setOnClickListener(new View.OnClickListener() {
@@ -269,7 +276,6 @@ public class ContentFragment extends Fragment {
         btnLove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 // 设置分享的内容
                 setShareContent();
                 mController.openShare(getActivity(), false);
@@ -280,6 +286,27 @@ public class ContentFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 showCommentDialog(poemItem);
+            }
+        });
+        btnAudio.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final String fileName = Environment.getExternalStorageDirectory() + "/" + poemItem.getAudioUrl();
+                File file = new File(fileName);
+                if (file.exists()) {
+                    player.playUrl(fileName);
+                } else {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                          //  String url = "http://files.cnblogs.com/files/GrateSea/" + poemItem.getAudioUrl().replace("mp3", "zip");
+                            String url="http://files.cnblogs.com/files/GrateSea/w20100812053713500.zip";
+                            FileDownloader.download(url, Environment.getExternalStorageDirectory().getAbsolutePath(), poemItem.getAudioUrl());
+                            player.playUrl(fileName);
+                        }
+                    }).start();
+                }
             }
         });
 

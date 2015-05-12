@@ -11,6 +11,7 @@
     <string name="key">请输入查询关键字</string>
     <string name="msg_nodata">不好意思，没有相关诗作！</string>
     <string name="comment">我要评论</string>
+    <string name="readit">朗读</string>
     <string name="add_love">分享</string>
     <string name="view_comment">查看评论</string>
 

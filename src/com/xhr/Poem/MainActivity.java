@@ -41,6 +41,7 @@ public class MainActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        AppState.setClassicPoems(AppState.getPoemAccess().getAllPoems());
         AppState.getCurrentPoems().clear();
         AppState.getCurrentPoems().addAll(AppState.getClassicPoems());
         initView();
