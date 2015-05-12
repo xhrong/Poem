@@ -29,7 +29,11 @@ public class PoemAccess {
         initValues.put(PoemItem.AUTHOR_KEY, poem.getAuthor());
         initValues.put(PoemItem.CATEGORY_KEY, poem.getCategory());
         initValues.put(PoemItem.CONTENT_KEY, poem.getContent());
-        initValues.put(PoemItem.DESCRIPTION_KEY, poem.getDescription());
+        initValues.put(PoemItem.NOTATION_KEY,poem.getNotation());
+        initValues.put(PoemItem.TRANSLATION_KEY,poem.getTranslation());
+        initValues.put(PoemItem.ANALYSIS_KEY,poem.getAnalysis());
+        initValues.put(PoemItem.AUDIO_URL_KEY,poem.getAudioUrl());
+        initValues.put(PoemItem.IMAGE_URL_KEY,poem.getImageUrl());
         initValues.put(PoemItem.IS_LOVED_KEY, poem.getIsLoved());
 
         SQLiteDatabase db = dbHelper.getReadableDatabase();
@@ -57,7 +61,11 @@ public class PoemAccess {
         initValues.put(PoemItem.AUTHOR_KEY, poem.getAuthor());
         initValues.put(PoemItem.CATEGORY_KEY, poem.getCategory());
         initValues.put(PoemItem.CONTENT_KEY, poem.getContent());
-        initValues.put(PoemItem.DESCRIPTION_KEY, poem.getDescription());
+        initValues.put(PoemItem.NOTATION_KEY,poem.getNotation());
+        initValues.put(PoemItem.TRANSLATION_KEY,poem.getTranslation());
+        initValues.put(PoemItem.ANALYSIS_KEY,poem.getAnalysis());
+        initValues.put(PoemItem.AUDIO_URL_KEY,poem.getAudioUrl());
+        initValues.put(PoemItem.IMAGE_URL_KEY,poem.getImageUrl());
         initValues.put(PoemItem.IS_LOVED_KEY, poem.getIsLoved());
         int result = db.update(TABLE_NAME, initValues, "id=?", new String[]{String.valueOf(poem.getId())});
         db.close();
@@ -115,7 +123,11 @@ public class PoemAccess {
         poemItem.setAuthor(cursor.getString(cursor.getColumnIndexOrThrow(PoemItem.AUTHOR_KEY)));
         poemItem.setCategory(cursor.getString(cursor.getColumnIndexOrThrow(PoemItem.CATEGORY_KEY)));
         poemItem.setContent(cursor.getString(cursor.getColumnIndexOrThrow(PoemItem.CONTENT_KEY)));
-        poemItem.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(PoemItem.DESCRIPTION_KEY)));
+        poemItem.setNotation(cursor.getString(cursor.getColumnIndexOrThrow(PoemItem.NOTATION_KEY)));
+        poemItem.setTranslation(cursor.getString(cursor.getColumnIndexOrThrow(PoemItem.TRANSLATION_KEY)));
+        poemItem.setAnalysis(cursor.getString(cursor.getColumnIndexOrThrow(PoemItem.ANALYSIS_KEY)));
+        poemItem.setAudioUrl(cursor.getString(cursor.getColumnIndexOrThrow(PoemItem.AUDIO_URL_KEY)));
+        poemItem.setImageUrl(cursor.getString(cursor.getColumnIndexOrThrow(PoemItem.IMAGE_URL_KEY)));
         poemItem.setIsLoved(cursor.getInt(cursor.getColumnIndexOrThrow(PoemItem.IS_LOVED_KEY)));
         return poemItem;
     }

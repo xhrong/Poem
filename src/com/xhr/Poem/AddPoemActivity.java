@@ -61,8 +61,6 @@ public class AddPoemActivity extends Activity {
                 poemItem.setAuthor(author);
                 poemItem.setContent(content);
                 poemItem.setIsLoved(1);
-                poemItem.setDescription("");
-                poemItem.setCategory("");
                 AppState.getPoemAccess().addPoem(poemItem);
                 Toast.makeText(AddPoemActivity.this, "添加成功", Toast.LENGTH_LONG).show();
                 AddPoemActivity.this.setResult(RESULT_OK);

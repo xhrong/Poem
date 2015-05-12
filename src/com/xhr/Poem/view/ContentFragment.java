@@ -53,7 +53,7 @@ public class ContentFragment extends Fragment {
 
   //  CommentAccess commentAccess;
 
-    TextView tvTitle, tvAuthor, tvContent, tvDescription;
+    TextView tvTitle, tvAuthor, tvContent, tvNotation,tvTranslation,tvAnalysis;
     Button btnBack, btnLove, btnComment, btnViewComment;
 
     public static ContentFragment newInstance(PoemItem poemItem) {
@@ -220,7 +220,9 @@ public class ContentFragment extends Fragment {
         tvTitle = (TextView) rootView.findViewById(R.id.tv_title);
         tvAuthor = (TextView) rootView.findViewById(R.id.tv_author);
         tvContent = (TextView) rootView.findViewById(R.id.tv_content);
-        tvDescription = (TextView) rootView.findViewById(R.id.tv_desc);
+        tvNotation = (TextView) rootView.findViewById(R.id.tvNotation);
+        tvTranslation=(TextView)rootView.findViewById(R.id.tvTranslation);
+        tvAnalysis=(TextView)rootView.findViewById(R.id.tvAnalysis);
         btnBack = (Button) rootView.findViewById(R.id.btn_back);
         btnLove = (Button) rootView.findViewById(R.id.btn_favorite);
         btnComment = (Button) rootView.findViewById(R.id.btnComment);
@@ -233,13 +235,25 @@ public class ContentFragment extends Fragment {
         tvAuthor.setText(poemItem.getAuthor());
         if(poemItem.getIsLoved()==1){
             tvContent.setText(poemItem.getContent());
-            tvDescription.setText(poemItem.getDescription());
+            tvNotation.setText("注解：\n"+ poemItem.getNotation());
+            tvTranslation.setText("翻译：\n"+poemItem.getTranslation());
+            tvAnalysis.setText("赏析：\n"+poemItem.getAnalysis());
         }else{
             tvContent.setText(Html.fromHtml(poemItem.getContent()));
-            if(!StringUtil.isEmpty(poemItem.getDescription())){
-                tvDescription.setText(Html.fromHtml(poemItem.getDescription()));
+            if(!StringUtil.isEmpty(poemItem.getNotation())){
+                tvNotation.setText("注解：\n"+ Html.fromHtml(poemItem.getNotation()));
             }else{
-                tvDescription.setText("");
+                tvNotation.setText("注解："+ "暂无");
+            }
+            if(!StringUtil.isEmpty(poemItem.getTranslation())){
+                tvTranslation.setText("翻译：\n"+Html.fromHtml(poemItem.getTranslation()));
+            }else{
+                tvTranslation.setText("翻译："+"暂无");
+            }
+            if(!StringUtil.isEmpty(poemItem.getAnalysis())){
+                tvAnalysis.setText("赏析：\n"+Html.fromHtml(poemItem.getAnalysis()));
+            }else{
+                tvAnalysis.setText("赏析："+"暂无");
             }
         }
 

@@ -21,6 +21,34 @@ public class WelcomeActivity extends Activity {
                 try {
                     PoemAccess poemAccess = new PoemAccess(WelcomeActivity.this);
                     AppState.setClassicPoems(poemAccess.getAllPoems());
+
+//                    for(PoemItem item :AppState.getClassicPoems()){
+//                        String content=item.getContent();
+//
+//                        content=content.replace("。","。<br>");
+//                        if(content.endsWith("<br>")){
+//                            content=content.substring(0,content.length()-4);
+//                        }
+//
+//                        String notation=item.getNotation();
+//                        notation=notation.replace("</p><p>  </p><p>","<br>").replace("</p><p>","<br>").replace("<p>","").replace("</p>","");
+//                        String translation=item.getTranslation();
+//                        translation=translation.replace("</p><p>  </p><p>","<br>").replace("</p><p>","<br>").replace("<p>","").replace("</p>","");
+//
+//                        String analysis=item.getAnalysis();
+//                        analysis=analysis.replace("</p><p>  </p><p>","<br>").replace("</p><p>","<br>").replace("<p>","").replace("</p>","");
+//
+//                        translation=translation.replace("<br>","");
+//                        analysis=analysis.replace("<br>","");
+//
+//                        item.setContent(content);
+//                        item.setNotation(notation);
+//                        item.setTranslation(translation);
+//                        item.setAnalysis(analysis);
+//
+//                        poemAccess.updatePoem(item);
+//
+//                    }
                     Thread.sleep(1000);
                     if (!isCanceled) {
                         Intent intent = new Intent(WelcomeActivity.this, MainActivity.class);
