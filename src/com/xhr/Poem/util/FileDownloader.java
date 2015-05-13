@@ -11,6 +11,7 @@ public class FileDownloader {
 
     public static int download(String urlStr, String path, String fileName) {
         OutputStream outputStream = null;
+        String tempFileName = fileName + ".temp";
         try {
             URL url = new URL(urlStr);
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
@@ -23,15 +24,15 @@ public class FileDownloader {
             http.setRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.2; Trident/4.0; .NET CLR 1.1.4322; .NET CLR 2.0.50727; .NET CLR 3.0.04506.30; .NET CLR 3.0.4506.2152; .NET CLR 3.5.30729)");
             http.setRequestProperty("Connection", "Keep-Alive");
 
-            String pathName = path + "/" + fileName;//文件存储路径
+            String pathName = path + "/" + tempFileName;//文件存储路径
 
-            File file = new File(pathName);
+            File tempFile = new File(pathName);
 
-            if (file.exists()) {
-                file.delete();
+            if (tempFile.exists()) {
+                tempFile.delete();
             }
             InputStream inStream = http.getInputStream();
-            outputStream = new FileOutputStream(file);
+            outputStream = new FileOutputStream(tempFile);
 
             byte[] buffer = new byte[1024 * 4];
             int len = 0;
@@ -40,6 +41,7 @@ public class FileDownloader {
             }
             outputStream.close();
             inStream.close();
+            tempFile.renameTo(new File(path + "/" + fileName));
             return 0;
         } catch (Exception ex) {
             ex.printStackTrace();
