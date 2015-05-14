@@ -19,6 +19,8 @@
     <orderEntry type="library" name="umeng_social_sdk (2)" level="project" />
     <orderEntry type="library" name="SocialSDK_evernote" level="project" />
     <orderEntry type="library" name="SocialSDK_evernote" level="project" />
+    <orderEntry type="library" name="open_sdk_r4889_lite" level="project" />
+    <orderEntry type="library" name="mta-sdk-1.6.2" level="project" />
   </component>
 </module>
 

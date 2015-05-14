@@ -26,4 +26,5 @@
     <string name="dlg_exit_tip">确定要退出吗？</string>
     <string name="dlg_exit">退出</string>
 
+    <string name="msg_no_network">网络不可用，请先连接网络</string>
 </resources>

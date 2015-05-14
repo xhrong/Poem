@@ -4,8 +4,8 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.os.Environment;
 import android.util.Log;
+import com.xhr.Poem.AppConfig;
 
 import java.io.*;
 
@@ -15,7 +15,7 @@ import java.io.*;
 public class XhrDbHelper extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "tangshi.db"; //数据库名称
-    private static String DB_PATH = Environment.getExternalStorageDirectory() + "/";
+    private static String DB_PATH = AppConfig.DB_PATH;
     private static String ASSETS_NAME = "tangshi.db";
     private static final int DB_VERSION = 1;
     private Context mContext;

@@ -134,7 +134,11 @@ public class ContentFragment extends Fragment {
         btnLove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                share.share(poemItem);
+                if(NetWorkUtil.checkConnectionState(getActivity())==NetWorkUtil.CONNECTIVITY_TYPE_NONE){
+                    Toast.makeText(getActivity(),R.string.msg_no_network,Toast.LENGTH_LONG).show();
+                }else {
+                    share.share(poemItem);
+                }
             }
         });
 
@@ -148,60 +152,64 @@ public class ContentFragment extends Fragment {
                 showCommentDialog(poemItem);
             }
         });
-        btnAudio.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (player.isPlaying()) {
-                    player.stop();
-                    btnAudio.setText("朗读");
-                    return;
-                }
-                btnAudio.setText("正在加载");
-                final String fileName = AppConfig.AUDIO_SAVE_PATH + "/" + poemItem.getAudioUrl();
-                File file = new File(fileName);
-                if (file.exists()) {
-                    player.play(fileName);
-                    btnAudio.setText("停止");
-                } else {
-                    int result = NetWorkUtil.checkConnectionState(getActivity());
-                    if (result == NetWorkUtil.CONNECTIVITY_TYPE_NONE) {
-                        Toast.makeText(getActivity(), "文件尚未下载，请联网使用该功能", Toast.LENGTH_LONG).show();
-                        return;
-                    } else if (result == NetWorkUtil.CONNECTIVITY_TYPE_OTHER) {
-                        Toast.makeText(getActivity(), "当前网络不是WIFI，请注意流量", Toast.LENGTH_LONG).show();
-                    }
-                    File temp = new File(AppConfig.AUDIO_SAVE_PATH);
-                    if (!temp.exists()) {
-                        temp.mkdirs();
-                    }
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            String url = AppConfig.AUDIO_DOWNLOAD_URL.replace("{0}", poemItem.getAudioUrl().replace("mp3", "zip"));
-                            int result = FileDownloader.download(url, AppConfig.AUDIO_SAVE_PATH, poemItem.getAudioUrl());
-                            if (result == 0) {
-                                btnAudio.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        player.play(fileName);
-                                        btnAudio.setText("停止");
-                                    }
-                                });
-                            } else {
-                                btnAudio.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        btnAudio.setText("朗读");
-                                        Toast.makeText(getActivity(), "文件下载失败，请重试", Toast.LENGTH_LONG).show();
-                                    }
-                                });
-                            }
-                        }
-                    }).start();
-                }
-            }
-        });
 
+        if (poemItem.getIsLoved() == 1) {
+            btnAudio.setVisibility(View.GONE);
+        } else {
+            btnAudio.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (player.isPlaying()) {
+                        player.stop();
+                        btnAudio.setText("朗读");
+                        return;
+                    }
+                    btnAudio.setText("正在加载");
+                    final String fileName = AppConfig.AUDIO_SAVE_PATH + "/" + poemItem.getAudioUrl();
+                    File file = new File(fileName);
+                    if (file.exists()) {
+                        player.play(fileName);
+                        btnAudio.setText("停止");
+                    } else {
+                        int result = NetWorkUtil.checkConnectionState(getActivity());
+                        if (result == NetWorkUtil.CONNECTIVITY_TYPE_NONE) {
+                            Toast.makeText(getActivity(), "文件尚未下载，请联网使用该功能", Toast.LENGTH_LONG).show();
+                            return;
+                        } else if (result == NetWorkUtil.CONNECTIVITY_TYPE_OTHER) {
+                            Toast.makeText(getActivity(), "当前网络不是WIFI，请注意流量", Toast.LENGTH_LONG).show();
+                        }
+                        File temp = new File(AppConfig.AUDIO_SAVE_PATH);
+                        if (!temp.exists()) {
+                            temp.mkdirs();
+                        }
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                String url = AppConfig.AUDIO_DOWNLOAD_URL.replace("{0}", poemItem.getAudioUrl().replace("mp3", "zip"));
+                                int result = FileDownloader.download(url, AppConfig.AUDIO_SAVE_PATH, poemItem.getAudioUrl());
+                                if (result == 0) {
+                                    btnAudio.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            player.play(fileName);
+                                            btnAudio.setText("停止");
+                                        }
+                                    });
+                                } else {
+                                    btnAudio.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            btnAudio.setText("朗读");
+                                            Toast.makeText(getActivity(), "文件下载失败，请重试", Toast.LENGTH_LONG).show();
+                                        }
+                                    });
+                                }
+                            }
+                        }).start();
+                    }
+                }
+            });
+        }
         btnViewComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
